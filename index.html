@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>mustache demo</title>
+    <script src="https://cdn.bootcss.com/jquery/1.9.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/mustache.js/3.0.1/mustache.min.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="text/html" id="template">
+        <div>{{name}}</div>
+        {{^isShowHtml}}
+            <div>{{showHtml}}</div>
+        {{/isShowHtml}}
+        {{#isShowHtml}}
+            <div>{{{showHtml}}}</div>
+        {{/isShowHtml}}
+        <button id="showHtml">show html</button>
+        <button id="hideHtml">hide html</button>
+    </script>
+
+    <script>
+        function Vm(opt) {
+            this.data = opt.data;
+            this.el = $(opt.el);
+            this.template = $(opt.template).text();
+        }
+        Vm.prototype.setData = function(key, val) {
+            if (typeof key === 'function') {
+                key(this.data);
+            } else {
+                this.data[key] = val;
+            }
+            var html = Mustache.render(this.template, this.data);
+            this.el.html(html);
+        }
+        var vm = new Vm({
+            data: {
+                name: '',
+                showHtml: '',
+                isShowHtml: false
+            },
+            el: '#app',
+            template: '#template'
+        })
+
+        init()
+        event()
+        function init() {
+            vm.setData('name', 'rokudo-mukuro');
+            vm.setData('showHtml', '<a href="http://www.baidu.com">baidu</a>');
+        }
+        function event() {
+            $('#app')
+                .on('click', '#showHtml', function() {
+                    vm.setData('isShowHtml', true);
+                })
+                .on('click', '#hideHtml', function () {
+                    vm.setData('isShowHtml', false);
+                })
+        }
+    </script>
+</body>
+</html>
